@@ -9,7 +9,7 @@ use App\Section;
 use App\Category;
 use Session;
 use Image;
-
+use App\ProductsAttribute;
 
 class ProductsController extends Controller
 {
@@ -45,7 +45,7 @@ class ProductsController extends Controller
        Product::where('id',$data['product_id'])->update(['status'=>$status]);
        return response()->json(['status'=>$status,'product_id'=>$data['product_id']]);
     }
-    }
+  }
 
     // add and edit product
     public function addEditProduct(Request $request,$id=null){
@@ -282,6 +282,88 @@ class ProductsController extends Controller
     public function deleteProduct($id){
         Product::where('id',$id)->delete();
         $message = 'Product  has been deleted Successfully'; 
+        Session::flash('success_message',$message);
+        return redirect()->back();
+
+    }
+
+    //
+    public function addAttributes(Request $request,$id)
+    {
+        if($request->isMethod('post')){
+            $data = $request->all();
+            //echo "<pre>"; print_r($data); die;
+            foreach ($data['sku'] as $key => $value) {
+               if(!empty($value)){ 
+               $attrCountSKU = ProductsAttribute::where('sku',$value)->count();
+               if($attrCountSKU>0){
+                $message = 'SKU already exists.Please add another Size!';
+                session::flash('error_message',$message);
+                return redirect()->back();
+               } 
+               $attrCountSize = ProductsAttribute::where(['product_id'=>$id,'size'=>$data['size'][$key]])->count();
+               if($attrCountSize>0){
+                $message = 'Size already exists.Please add another SKU!';
+                session::flash('error_message',$message);
+                return redirect()->back();
+               } 
+               $attribute = new ProductsAttribute;
+               $attribute->product_id = $id;
+               $attribute->sku =  $value;
+               $attribute->size = $data['size'][$key];
+               $attribute->price = $data['price'][$key];
+               $attribute->stock = $data['stock'][$key];
+               $attribute->status = 1;
+               $attribute->save();
+
+              }
+                
+            }
+            $success_message = 'Product Attributes added Successfully!';
+            session::flash('success_message',$success_message);
+            return redirect()->back();            
+        }
+        $productdata = Product::select('id','product_name','product_code','product_color','main_image')->with('attributes')->find($id);
+        $productdata = json_decode(json_encode($productdata),true);
+        //echo "<pre>"; print_r($productdata); die;
+        $title = "Product Attributes";
+        return view('admin.products.add_attributes')->with(compact('productdata','title'));
+    }
+    public function editAttributes(Request $request,$id)
+    {
+        if($request->isMethod('post')){
+            $data = $request->all();
+            //echo "<pre>"; print_r($data); die;
+            foreach ($data['attrId'] as $key => $attr) {
+                if(!empty($attr)){
+                    ProductsAttribute::where(['id'=>$data['attrId'][$key]])->update(['price'=>$data['price'][$key],'stock'=>$data['stock'][$key]]);
+                }
+                
+            }
+            $success_message = 'Product Attributes updated Successfully!';
+            session::flash('success_message',$success_message);
+            return redirect()->back();   
+        }        
+    }
+    public function updateAttributeStatus(Request $request)
+    {
+    if($request->ajax()){
+        $data = $request->all();
+      //echo "<pre>"; print_r($data); die;
+       if($data['status']=="Active"){
+         $status = 0;
+       }
+       else{
+         $status = 1;
+       }
+       ProductsAttribute::where('id',$data['attribute_id'])->update(['status'=>$status]);
+       return response()->json(['status'=>$status,'attribute_id'=>$data['attribute_id']]);
+    }
+   }
+    //Delete Attribute
+    public function deleteAttribute($id){
+        ProductsAttribute::where('id',$id)->delete();
+        $message = 'Product Attribute  has been deleted Successfully'; 
         Session::flash('success_message',$message);
         return redirect()->back();
 

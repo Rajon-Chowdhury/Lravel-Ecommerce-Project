@@ -22,8 +22,8 @@
 
   <!-- Main content -->
   <section class="content">
-    <div class="row">
-      <div class="col-12">
+   <div class="row">
+    <div class="col-12">
        @if(Session::has('success_message'))
        <div class="alert alert-success alert-dismissible fade show" role="alert" style="margin-top: 10px;">
         {{Session::get('success_message')}}
@@ -32,18 +32,16 @@
         </button>
       </div>
       @endif  
-      <div class="card">
+     <div class="card">
         <div class="card-header">
           <h3 class="card-title">Products</h3>
           <a href="{{url('admin/add-edit-product')}}" style="max-width: 150px; float: right; display: inline-block;" class="btn btn-block btn-success">Add Product</a>
         </div>
         <!-- /.card-header -->
 
-      </div>
-
       <!-- /.card-header -->
-      <div class="card-body">
-        <table id="products" class="table table-bordered table-striped">
+        <div class="card-body">
+         <table id="products" class="table table-bordered table-striped">
           <thead>
             <tr>
               <th>ID</th>
@@ -76,27 +74,29 @@
               <td>{{$product->section->name}}</td>
               <td>
                 @if($product->status==1)
-                <a class="updateProductStatus" id="product-{{$product->id}}" product_id="{{$product->id}}" href="javascript:void(0)">Active</a> 
+                <a  class="updateProductStatus" id="product-{{$product->id}}" product_id="{{$product->id}}" href="javascript:void(0)">Active</a> 
                 @else
-                <a class="updateProductStatus" id="product-{{$product->id}}" product_id="{{$product->id}}" href="javascript:void(0)">Inactive</a> 
+                <a  class="updateProductStatus" id="product-{{$product->id}}" product_id="{{$product->id}}" href="javascript:void(0)">Inactive</a> 
                 @endif    
               </td>
               <td>
-                <a href="{{url('admin/add-edit-product/'.$product->id)}}">Edit</a> 
+                <a title="Add\Edit Attributes" href="{{url('admin/add-attributes/'.$product->id)}}"><i class="fas fa-plus"></i></a> 
                 &nbsp;&nbsp;
-                <a href="javascript:void(0)" class="confirmDelete" record="product" recordid="{{$product->id}}"<?php /*href="{{url('admin/delete-product/'.$product->id)}}*/ ?>>Delete</a> 
+                <a title="Edit Product" href="{{url('admin/add-edit-product/'.$product->id)}}"><i class="fas fa-edit"></i></a> 
+                &nbsp;&nbsp;
+                <a title="Delete Product" href="javascript:void(0)" class="confirmDelete" record="product" recordid="{{$product->id}}"<?php /*href="{{url('admin/delete-product/'.$product->id)}}*/ ?>><i class="fas fa-trash"></i></a> 
               </td>
             </tr>
             @endforeach
           </tbody>
-        </table>
-      </div>
+         </table>
+        </div>
       <!-- /.card-body -->
-    </div>
+      </div>
     <!-- /.card -->
-  </div>
+    </div>
   <!-- /.col -->
-</div>
+   </div>
 <!-- /.row -->
 </section>
 <!-- /.content -->

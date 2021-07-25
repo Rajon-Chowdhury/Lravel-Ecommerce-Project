@@ -52,7 +52,12 @@ Route::prefix('/admin')->namespace('Admin')->group(function(){
      Route::get('delete-product/{id}','ProductsController@deleteProduct');
      Route::get('delete-product-image/{id}','ProductsController@deleteProductImage');
      Route::get('delete-product-video/{id}','ProductsController@deleteProductVideo');
-  
+
+     //Attributes
+     Route::match(['get','post'],'add-attributes/{id}','ProductsController@addAttributes');   
+     Route::post('edit-attributes/{id}','ProductsController@editAttributes'); 
+     Route::post('update-attribute-status','ProductsController@updateAttributeStatus'); 
+     Route::get('delete-attribute/{id}','ProductsController@deleteAttribute'); 
  
    });
    
