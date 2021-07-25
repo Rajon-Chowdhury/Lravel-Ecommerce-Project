@@ -10,6 +10,7 @@ use App\Category;
 use Session;
 use Image;
 use App\ProductsAttribute;
+use App\ProductsImage;
 
 class ProductsController extends Controller
 {
@@ -360,6 +361,21 @@ class ProductsController extends Controller
        return response()->json(['status'=>$status,'attribute_id'=>$data['attribute_id']]);
     }
    }
+    public function updateImageStatus(Request $request)
+    {
+    if($request->ajax()){
+        $data = $request->all();
+      //echo "<pre>"; print_r($data); die;
+       if($data['status']=="Active"){
+         $status = 0;
+       }
+       else{
+         $status = 1;
+       }
+       ProductsImage::where('id',$data['image_id'])->update(['status'=>$status]);
+       return response()->json(['status'=>$status,'image_id'=>$data['image_id']]);
+    }
+   }
     //Delete Attribute
     public function deleteAttribute($id){
         ProductsAttribute::where('id',$id)->delete();
@@ -368,5 +384,82 @@ class ProductsController extends Controller
         return redirect()->back();
 
     }
+    public function addImages(Request $request,$id){
+       
+       if($request->isMethod('post')){
+          $data = $request->all();
+          
+          if($request->hasFile('images')){
+            $images = $request->file('images');
+            foreach ($images as $key => $image) {
+                $productImage = new ProductsImage;
+                $image_tmp = Image::make($image);
+               // $originalName = $image->getClientOriginalName();
+                $extension = $image->getClientOriginalExtension();
+                $imageName = rand(111,999999).time().".".$extension;
 
+
+                $large_image_path = 'images/product_images/large/'.$imageName;
+                $medium_image_path = 'images/product_images/medium/'.$imageName;
+                $small_image_path = 'images/product_images/small/'.$imageName;
+
+                //upload the images
+                Image::make($image_tmp)->save($large_image_path);
+                //Upload small and medium image after resize
+                Image::make($image_tmp)->resize(520,600)->save($medium_image_path);
+                Image::make($image_tmp)->resize(260,300)->save($small_image_path);
+
+                 $productImage->image = $imageName;
+                 $productImage->product_id = $id;
+                 $productImage->status = 1;
+
+                $productImage->save();
+
+            }
+           $message = 'Product Images  has been added Successfully'; 
+           Session::flash('success_message',$message);
+           return redirect()->back();
+
+
+          }
+       }
+        
+       $productdata = Product::with('images')->select('id','product_name','product_code','product_color','main_image')->where('id',$id)->first();
+       $productdata = json_decode(json_encode($productdata),true);
+       //echo "<pre>"; print_r($productdata); die; 
+       $title = "Product Image";
+       return view('admin.products.add_images')->with(compact('title','productdata'));
+    }
+
+    //Delete image of ProductsImage table
+    public function deleteImage($id){
+     //Get Category Image
+    $productImage = ProductsImage::select('image')->where('id',$id)->first();
+    
+    // Get product Image Path
+    $small_image_path = 'images/product_images/small';
+    $medium_image_path = 'images/product_images/medium';
+    $large_image_path = 'images/product_images/large';
+
+    //Delete Product Small Images  if exists in small folder
+    if(file_exists($small_image_path.$productImage->image)){
+        unlink($small_image_path.$productImage->image);
+    }      
+    //Delete Product medium Images  if exists in medium folder
+    if(file_exists($medium_image_path.$productImage->image)){
+        unlink($medium_image_path.$productImage->image);
+    }        
+    //Delete Product Large Images  if exists in Large folder
+    if(file_exists($large_image_path.$productImage->image)){
+        unlink($large_image_path.$productImage->image);
+    }
+
+    //Delete product Images from productsImage table 
+     Product::where('id',$id)->update(['main_image'=>'']);
+     $message = 'Product Images has been deleted Successfully'; 
+    //return redirect()->back()->with('flash_message_success','product Image has been deleted Successfully!');
+     Session::flash('success_message',$message);
+     return redirect()->back();
+
+    }
 }
