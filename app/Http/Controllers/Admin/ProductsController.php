@@ -146,7 +146,7 @@ class ProductsController extends Controller
           $data['meta_keywords'] ="";
        }
       
-        //Upload Product Main Image
+    //Upload Product Main Image
      if($request->hasFile('main_image')){
 
        $image_tmp = $request->file('main_image');
