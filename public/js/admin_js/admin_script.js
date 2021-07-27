@@ -22,7 +22,7 @@ $(document).ready(function(){
    });
 
    //Update Sections Status
-    $(".updateSectionStatus").click(function(){
+    $(document).on("click",".updateSectionStatus",function(){  
            var status = $(this).children("i").attr("status");
            var section_id = $(this).attr("section_id");
            $.ajax({
@@ -44,7 +44,7 @@ $(document).ready(function(){
            });
     }); 
    //Update Brands Status
-    $(".updateBrandStatus").click(function(){
+    $(document).on("click",".updateBrandStatus",function(){  
            var status = $(this).children("i").attr("status");
            var brand_id = $(this).attr("brand_id");
            $.ajax({
@@ -67,7 +67,7 @@ $(document).ready(function(){
     });    
 
    //Update Category Status
-    $(".updateCategoryStatus").click(function(){
+    $(document).on("click",".updateCategoryStatus",function(){
            var status = $(this).children("i").attr("status");
            var category_id = $(this).attr("category_id");
            $.ajax({
@@ -105,7 +105,7 @@ $(document).ready(function(){
      });
 
     //Update Product Status
-    $(".updateProductStatus").click(function(){
+    $(document).on("click",".updateProductStatus",function(){  
             var status = $(this).children("i").attr("status");
            var product_id = $(this).attr("product_id");
            $.ajax({
@@ -127,7 +127,7 @@ $(document).ready(function(){
            });
     });
     //Update Attribute Status
-    $(".updateAttributeStatus").click(function(){
+    $(document).on("click",".updateAttributeStatus",function(){   
            var status = $(this).text();
            var attribute_id = $(this).attr("attribute_id");
            $.ajax({
@@ -149,7 +149,7 @@ $(document).ready(function(){
            });
     });
     //Update Image Status
-    $(".updateImageStatus").click(function(){
+    $(document).on("click",".updateImageStatus",function(){    
            var status = $(this).text();
            var image_id = $(this).attr("image_id");
            $.ajax({
@@ -171,6 +171,29 @@ $(document).ready(function(){
            });
     });
 
+    //Update Banners Status
+    $(document).on("click",".updateBannerStatus",function(){  
+           var status = $(this).children("i").attr("status");
+           var banner_id = $(this).attr("banner_id");
+           $.ajax({
+             type: 'post',
+             url : '/admin/update-banner-status',
+             data: {status:status,banner_id:banner_id},
+             success:function(resp){
+               // alert(resp['status']);
+               // alert(resp['banner_id']);
+                if(resp['status']==0){
+                  $("#banner-"+banner_id).html("<i class='fa fa-toggle-off' aria-hidden='true' status='Inactive'></i>");
+                }
+                else if(resp['status']==1){
+                  $("#banner-"+banner_id).html("<i class='fa fa-toggle-on' aria-hidden='true' status='Active'></i>");
+                } 
+             },error:function(){
+              alert('Error');
+             }
+           });
+    });
+
     //Confirm Deletion of Record
 
     //using normal javascript alert
@@ -184,7 +207,7 @@ $(document).ready(function(){
      // }); 
 
      //using sweet alert
-      $(".confirmDelete").click(function(){
+      $(document).on("click",".confirmDelete",function(){  
         var record = $(this).attr("record");
         var recordid = $(this).attr("recordid");
         Swal.fire({
