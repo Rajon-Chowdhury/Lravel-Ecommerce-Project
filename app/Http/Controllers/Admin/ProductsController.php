@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Product;
 use App\Section;
 use App\Category;
+use App\Brand;
 use Session;
 use Image;
 use App\ProductsAttribute;
@@ -16,7 +17,7 @@ class ProductsController extends Controller
 {
     //
     public function products(){
-        Session::put('page','product s');
+        Session::put('page','products');
         //Normal query which fetch all data from diff table
         /* $products = Product::with(['category','section'])->get();
         */
@@ -62,18 +63,22 @@ class ProductsController extends Controller
             $title = "Edit Product";
             $productdata = Product::find($id);
             $productdata = json_decode(json_encode($productdata),true);
-           
+
+            $product= Product::find($id);
             $message = 'Product Updated Successfully';
            
         }
-    if($request->isMethod('post')){
+       
+           
+      if($request->isMethod('post')){
         $data = $request->all();
-        //echo "<pre>"; print_r($data['is_featured']); die;
+        
         //echo "<pre>"; print_r($productdata['is_featured']); die;
        
      //Product Validation
         $rules = [
         'category_id'=>'required',
+        'brand_id'=>'required',
         'product_name' => 'required|regex:/^[\pL\s\-]+$/u',
         'product_code' => 'required|regex:/^[\w-]*$/',
         'product_price'=>'required|numeric',
@@ -81,6 +86,7 @@ class ProductsController extends Controller
         ];
         $customMessages = [
          'category_id.required' =>'Category is required',
+         'brand_id.required' =>'Brand is required',
          'product_name.required' =>'Product Name is required',
          'product_name.regex' =>'Valid Product Name is required',
          'product_code.required' =>'Product Code is required',
@@ -98,16 +104,16 @@ class ProductsController extends Controller
           $is_featured = "No";
        }
 
-
-       if(empty($data['discount'])){
-          $data['discount'] ="";
-       }       
-       if(empty($data['weight'])){
-          $data['weight'] ="";
-       }       
        if(empty($data['product_video'])){
           $data['product_video'] ="";
+       }   
+
+       if(empty($data['discount'])){
+          $data['discount'] =0;
        }       
+       if(empty($data['weight'])){
+          $data['weight'] =0;
+       }            
        if(empty($data['description'])){
           $data['description'] ="";
        }       
@@ -139,10 +145,12 @@ class ProductsController extends Controller
        if(empty($data['meta_keywords'])){
           $data['meta_keywords'] ="";
        }
+      
         //Upload Product Main Image
      if($request->hasFile('main_image')){
+
        $image_tmp = $request->file('main_image');
-     if($image_tmp->isValid()){
+        if($image_tmp->isValid()){
         //Get Image Extention
         $image_name = $image_tmp->getClientOriginalName();
         $extension = $image_tmp->getClientOriginalExtension();
@@ -173,18 +181,26 @@ class ProductsController extends Controller
             //Geerate New Video name  
             $videoName = $video_name.'-'.rand(111,99999).'.'.$extension;
 
-            $video_path = 'videos/product_videos/'.$videoName;
+            $video_path = 'videos/product_videos/';
             $video_tmp->move($video_path,$videoName);
 
             // save product vedio in the product table
             $product->product_video = $videoName;
         }
      }
-
+      
+      //echo "<pre>";print_r($data); die;
 
        //Save Product details in products table
+       
        $categoryDetails = Category::find($data['category_id']);
-       $product->section_id    = $categoryDetails['section_id'];
+     
+     
+       //echo "<pre>";print_r($categoryDetails); die;
+       $product->section_id      = $categoryDetails['section_id'];
+      // echo "<pre>";print_r($product->section_id); die;
+       //echo "<pre>";print_r($data['brand_id']); die;
+       $product->brand_id        = $data['brand_id'];
        $product->category_id     = $data['category_id'];
        $product->product_name    = $data['product_name'];
        $product->product_code    = $data['product_code'];
@@ -221,11 +237,16 @@ class ProductsController extends Controller
         
         // Select section with catagories and subcatagories
         $categories = Section::with('categories')->get();
-
         $categories = json_decode(json_encode($categories),true);
-        //echo "<pre>"; print_r($catagories); die;        
+        //echo "<pre>"; print_r($catagories); die; 
 
-        return view('admin.products.add_edit_product')->with(compact('title','fabricArray','sleeveArray','patternArray','fitArray','occasionArray','categories','productdata'));
+        $brands = Brand::where('status',1)->get();   
+        $brands = json_decode(json_encode($brands),true); 
+
+        //  foreach($brands as $brand) 
+       //  echo "<pre>";print_r($productdata); die;
+
+        return view('admin.products.add_edit_product')->with(compact('title','fabricArray','sleeveArray','patternArray','fitArray','occasionArray','categories','productdata','brands'));
 
     }
     public function deleteProductImage($id){

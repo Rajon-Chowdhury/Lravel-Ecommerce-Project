@@ -56,7 +56,8 @@ class CategoryController extends Controller
         if($request->isMethod('post')){
         	$data = $request->all();
         	//echo "<pre>"; print_r($data); die;
-
+          
+          //Category validation
             $rules = [
 	        'category_name' => 'required|regex:/^[\pL\s\-]+$/u',
 	        'section_id'=>'required',

@@ -76,6 +76,7 @@
     $("#sections").DataTable();
     $("#categories").DataTable();
     $("#products").DataTable();
+    $("#brands").DataTable();
   });
 </script>
 <!-- ChartJS -->
