@@ -13,6 +13,9 @@ class Product extends Model
     //
     public function section(){
         return $this->belongsTo('App\Section','section_id');
+    }   
+    public function brand(){
+        return $this->belongsTo('App\Brand','brand_id');
     }
 
     public function attributes(){
