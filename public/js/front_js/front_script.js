@@ -1,5 +1,12 @@
 $(document).ready(function(){
 
+    //Used for csrf token 
+    $.ajaxSetup({
+    headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    }
+    });
+
     //Without using ajax update sort 
     // $("#sort").on('change',function(){ 	
     //  this.form.submit();
@@ -121,5 +128,29 @@ $(document).ready(function(){
         });
         return filter;
     }
+
+    //Changeing Price based on size 
+    $("#getPrice").on('change',function(){
+        var size = $(this).val();
+        if(size==""){
+            alert("Please select Size");
+            return false;
+        }
+        var product_id = $(this).attr("product-id");
+
+        $.ajax({
+           url:'/get-product-price',
+           type:"post",
+           data:{size:size,product_id:product_id},
+           success:function(resp){
+              //alert(resp);
+              $('.getAttrPrice').html("Tk."+resp);
+           },error:function(){
+            alert("Error");
+           }
+        });
+        
+    });
+ 
 
 });

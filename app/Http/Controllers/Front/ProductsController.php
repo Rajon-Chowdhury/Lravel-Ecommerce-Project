@@ -7,11 +7,12 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Category;
 use App\Product;
+use App\ProductsAttribute;
 
 class ProductsController extends Controller
 {
     //
-
+    //Listing Page
     public function listing(Request $request){
         Paginator::useBootstrap();
         if($request->ajax()){
@@ -114,5 +115,27 @@ class ProductsController extends Controller
                 abort(404);
             }
             }
+    }
+    //Product Detail page
+    public function detail($id){
+        $productDetails = Product::with('category','brand','attributes','images')->find($id)->toArray();
+        //dd($productDetails);die;
+
+        $total_stock = ProductsAttribute::where('product_id',$id)->sum('stock');
+        $relatedProducts = Product::where('category_id',$productDetails['category']['id'])->where('id','!=',$id)->limit(3)->inRandomOrder()->get()->toArray();
+        //dd($relatedProducts);die;
+        
+        
+        return view('front.products.detail')->with(compact('productDetails','total_stock','relatedProducts'));
+    }
+
+    public function getProductPrice(Request $request){
+        if($request->ajax()){
+            $data = $request->all();
+            // echo "<pre>"; print_r($data); die;
+            $getProductPrice = ProductsAttribute::where(['product_id'=>$data['product_id'],'size'=>$data['size']])->first();
+
+        return $getProductPrice->price;
+        }
     }
 }

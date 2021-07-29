@@ -84,16 +84,17 @@ Route::prefix('/admin')->namespace('Admin')->group(function(){
 Route::namespace('Front')->group(function(){
    //Home Page Route
    Route::get('/','IndexController@index');
-   //Listing Route
-   // Route::get('/{url}','ProductsController@listing');
 
+
+   //Listing Route
    //Get Category Url's
    $catUrls = Category::select('url')->where('status',1)->get()->pluck('url')->toArray();
    foreach($catUrls as $url){
       Route::get('/'.$url,'ProductsController@listing');
    }
-   Route::get('/contact-us',function(){
-       echo "Contact test"; die;
-   });
-
+   
+   //Product Detail Page Route
+   Route::get('/product/{id}','ProductsController@detail');
+   //Get Product Attribute Price 
+   Route::post('/get-product-price','ProductsController@getProductPrice');
 });
