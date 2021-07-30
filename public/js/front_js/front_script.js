@@ -143,14 +143,70 @@ $(document).ready(function(){
            type:"post",
            data:{size:size,product_id:product_id},
            success:function(resp){
-              //alert(resp);
-              $('.getAttrPrice').html("Tk."+resp);
+              if(resp['discount']>0){
+                $('.getAttrPrice').html("<del>Tk."+resp['product_price']+"</del> Tk."+resp['final_price']);   
+              }else{
+                $('.getAttrPrice').html("Tk."+resp['product_price']);
+              }
            },error:function(){
             alert("Error");
            }
         });
         
     });
+
+    //Update Item Cart
+
+    $(document).on('click','.btnItemUpdate',function(){
+          if($(this).hasClass('qtyMinus')){
+             var quantity = $(this).prev().val();
+             if(quantity<=1){
+              alert("Item quantity must be 1 or grater");
+              return false;
+              }else{
+                 new_qty = parseInt(quantity)-1;
+              }
+          }
+          if($(this).hasClass('qtyPlus')){
+             var quantity = $(this).prev().prev().val();
+             
+             new_qty = parseInt(quantity)+1;
+            
+          }
+          var cartid = $(this).data('cartid');
+          $.ajax({
+            data:{"cartid":cartid,"qty":new_qty},
+            url:'/update-cart-item-qty',
+            type:'post',
+            success:function(resp){
+                if(resp.status==false){
+                    alert(resp.message);
+                }
+                $("#AppendCartItems").html(resp.view); 
+            },error:function(){
+                alert("Error");
+            }
+          });
+    }); 
+
+    //Delete Item Cart
+
+    $(document).on('click','.btnItemDelete',function(){
+          var cartid = $(this).data('cartid');
+          var result = confirm("Want to delete This Cart Item")
+          if(result){
+          $.ajax({
+            data:{"cartid":cartid},
+            url:'/delete-cart-item',
+            type:'post',
+            success:function(resp){
+                $("#AppendCartItems").html(resp.view); 
+            },error:function(){
+                alert("Error");
+            }
+          });
+      }
+    }); 
  
 
 });

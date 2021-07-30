@@ -72,6 +72,9 @@
                 <div class="form-group">
                  <label for="product_color"> Product Color :</label>&nbsp;&nbsp;{{$productdata['product_color']}}
                 </div>
+                <div class="form-group">
+                 <label for="product_color"> Product Price :</label>&nbsp;&nbsp;{{$productdata['product_price']}}
+                </div>
               </div> 
       
               <div class="col-md-6">

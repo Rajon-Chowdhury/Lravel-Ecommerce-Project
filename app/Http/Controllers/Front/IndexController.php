@@ -13,7 +13,7 @@ class IndexController extends Controller
         //Get featured Items
          $featuredItemsCount = Product::where(['is_featured'=>'Yes','status'=>1])->count();
          $featuredItems = Product::where(['is_featured'=>'Yes','status'=>1])->get()->toArray();
-         $featuredItemsChunk = array_chunk($featuredItems, 4);
+         $featuredItemsChunk = array_chunk($featuredItems, 3);
          //echo "<pre>" ; print_r($featuredItemsChunk) ; die;
          //dd($featuredItems); die;
 

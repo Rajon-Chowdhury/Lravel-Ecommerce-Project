@@ -1,3 +1,4 @@
+<?php use App\Product; ?>
 		<div class="tab-pane  active" id="blockView">
 			<ul class="thumbnails">
 				@foreach($categoryProducts as $product)
@@ -21,8 +22,18 @@
 								<p>
 									{{$product['brand']['name']}}
 								</p>
-								<h4 style="text-align:center"><a class="btn" href="product_details.html"> <i class="icon-zoom-in"></i></a> <a class="btn" href="#">Add to <i class="icon-shopping-cart"></i></a> <a class="btn btn-primary" href="#">
-								Tk.{{$product['product_price']}}</a></h4>
+								<p>
+									<?php $discounted_price = Product::getDiscountedPrice($product['id']);?>
+								</p>
+								<h4 style="text-align:center"><!-- <a class="btn" href="product_details.html"> <i class="icon-zoom-in"></i></a> --> <a class="btn" href="#">Add to <i class="icon-shopping-cart"></i></a> <a class="btn btn-primary" href="#">
+						        @if($discounted_price>0)			
+								   <del>Tk.{{$product['product_price']}}</del>
+								    <font color="yellow">{{ $discounted_price }}</font>
+								@else 
+								   Tk.{{$product['product_price']}}
+								@endif   
+							    </a>
+							   </h4>
 								<p>
 								 {{$product['fabric']}}	
 								</p>
