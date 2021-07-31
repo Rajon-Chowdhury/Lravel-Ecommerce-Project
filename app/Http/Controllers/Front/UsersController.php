@@ -8,6 +8,7 @@ use App\User;
 use Auth;
 use Session;
 use App\Cart;
+use App\Sms;
 
 class UsersController extends Controller
 {
@@ -37,7 +38,11 @@ class UsersController extends Controller
                 $user_id = Auth::user()->id;
                 $session_id = Session::get('session_id');
                 Cart::where('session_id',$session_id)->update(['user_id'=>$user_id]);
-             }  
+             }
+              $message = "Dear Customer, You have been successfully Registerd";
+              $mobile = $data['mobile'];
+              Sms::sendSma($message,$mobile);
+
               return redirect('casual-t-shirt');
             }
          }
