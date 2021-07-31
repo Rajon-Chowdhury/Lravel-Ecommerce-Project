@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Route;
 //     return view('welcome');
 // });
 use App\Category;
-Auth::routes();
+// Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 
@@ -113,8 +113,15 @@ Route::namespace('Front')->group(function(){
    Route::get('/login-register','UsersController@loginRegister');
 
    //Login user
-   Route::get('/login','UsersController@loginUser');
+   Route::post('/login','UsersController@loginUser');
    //Register user
-   Route::get('/register','UsersController@RegisterUser');
+   Route::post('/register','UsersController@registerUser');
+
+   //Check email is already exists
+   Route::match(['get','post'],'/check-email','UsersController@checkEmail');
+   
+   //Logout User
+   Route::get('/logout','UsersController@logoutUser');
+
 
 });

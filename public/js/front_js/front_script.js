@@ -207,6 +207,70 @@ $(document).ready(function(){
           });
       }
     }); 
+
+    // validate register form on keyup and submit
+    $("#registerForm").validate({
+        rules: {
+             name: "required",
+             mobile: {
+                required: true,
+                minlength: 10,
+                maxlength: 10,
+                digits:true
+            },
+            email: {
+                required: true,
+                email: true,
+                remote:"check-email"
+            },
+            password: {
+                required: true,
+                minlength: 6
+            },
+        },
+        messages: {
+            name: "Please enter your name",
+            mobile: {
+                required: "Please enter your moubile",
+                minlength: "Your mobile must consist of 10 digits",
+                maxlength: "Your mobile must consist of 10 digits",
+                digits:"Please enter your valid Mobile"
+            },
+            email: {
+                required: "Please provide your eamil",
+                email: "Please enter your valid email",
+                remote:"Email already exists"
+            },
+            password: {
+                required: "Please provide a password",
+                minlength: "Your password must be at least 6 characters long"
+            }
+        }
+    });
+    // validate login form on keyup and submit
+    $("#loginForm").validate({
+        rules: {
+            email: {
+                required: true,
+                email: true
+            },
+            password: {
+                required: true,
+                minlength: 6
+            },
+        },
+        messages: {
+            email: {
+                required: "Please provide your eamil",
+                email: "Please enter your valid email",
+                remote:"Email already exists"
+            },
+            password: {
+                required: "Please Enter your password",
+                minlength: "Your password must be at least 6 characters long"
+            }
+        }
+    });
  
 
 });
